@@ -19,6 +19,3 @@ def main(args):
     for file in files:
         unpacker(args.path+file, args.path+'unpack/')
     print(f'''Распаковано {len(os.listdir(args.path+'unpack/'))} из {len(files)}''')
-
-# if __name__ == '__main__':
-#     main()

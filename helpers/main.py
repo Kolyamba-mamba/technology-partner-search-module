@@ -1,21 +1,21 @@
 import sys
 
-import argParser
-import patentDownloader
-import unpacker
+import helpers.argParser as ap
+import helpers.patentDownloader as pd
+import helpers.unpacker as up
 
 
 def main():
-    args = argParser.parse_args(sys.argv[1:])
+    args = ap.parse_args(sys.argv[1:])
 
-    if not argParser.validate_args(args):
+    if not ap.validate_args(args):
         return
 
     if args.startDownloader:
-        patentDownloader.main(args)
+        pd.main(args)
 
     if args.startUnpacker:
-        unpacker.main(args)
+        up.main(args)
 
 
 if __name__ == '__main__':
