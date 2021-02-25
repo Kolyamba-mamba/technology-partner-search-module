@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup as BS
-import lxml
 from models.patent import Patent
 
 
