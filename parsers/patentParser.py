@@ -168,7 +168,7 @@ def main():
     splitted_xml = splitter(xml)
     print(len(splitted_xml))
     iter = 0
-    while iter < 10:
+    while iter < len(splitted_xml):
         parsed_patent = parse_XML(splitted_xml[iter])
         save_files = save_patent(parsed_patent, path)
         patent = map_patent(parsed_patent, save_files)
