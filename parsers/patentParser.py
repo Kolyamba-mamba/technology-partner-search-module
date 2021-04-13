@@ -1,7 +1,12 @@
 from bs4 import BeautifulSoup as BS
 import os
+import uuid
+import sys
+import multiprocessing
 from models.parsedPatent import ParsedPatent
 from models.patent import Patent
+from helpers.dbHelper import create_connection, create_tables
+from dbActions.insertTables import insert_patent
 
 
 def save_to_file(path: str, patent_title: str, ext: str, data: str):
@@ -118,7 +123,7 @@ def parse_XML(text):
                         continue
 
         return ParsedPatent(application_reference, publication_reference, str(classification_type),
-                           str(main_classification), title, inventors, abstract, description, claims)
+                            str(main_classification), title, inventors, abstract, description, claims)
 
     except Exception:
         print("Ошибка при парсинге патента " + patent_reference)
@@ -149,31 +154,79 @@ def save_patent(patent: ParsedPatent, path: str):
 
 
 def map_patent(parsed_patent: ParsedPatent, paths):
-    patent_reference = parsed_patent.publication_reference["country"] + parsed_patent.publication_reference["doc-number"] \
+    patent_reference = parsed_patent.publication_reference["country"] + parsed_patent.publication_reference[
+        "doc-number"] \
                        + parsed_patent.publication_reference["kind"]
     if parsed_patent.inventors and len(parsed_patent.inventors) > 0:
         inventors = ','.join(str(e['first-name']) + " " + str(e['last-name']) for e in parsed_patent.inventors)
     else:
         inventors = ""
-    return Patent(patent_reference, parsed_patent.main_classification_type,
-                        parsed_patent.main_classification, parsed_patent.title, inventors, paths['abstractPath'],
-                        paths['descriptionPath'], paths['claimsPath'])
+    return Patent(str(uuid.uuid4()), patent_reference, parsed_patent.main_classification_type,
+                  parsed_patent.main_classification, parsed_patent.title, inventors, paths['abstractPath'],
+                  paths['descriptionPath'], paths['claimsPath'])
+
+
+# Функция для обработки файлов
+def process_files(files, path):
+    con = create_connection("diplom", "postgres", "postgres", "localhost", "5432")
+    for file in files:
+        with open(file) as f:
+            xml = f.read()
+        splitted_xml = splitter(xml)
+        print(len(splitted_xml))
+        iter = 0
+        while iter < len(splitted_xml):
+            parsed_patent = parse_XML(splitted_xml[iter])
+            save_files = save_patent(parsed_patent, path)
+            patent = map_patent(parsed_patent, save_files)
+            insert_patent(con, patent)
+            iter += 1
+        print(patent.title)
+    con.close()
 
 
 def main():
-    file = 'C:/Users/mrkol/Documents/patents/unpack/ipg100105.xml'
+    parallel_processes_count = multiprocessing.cpu_count() - 2
     path = 'C:/Users/mrkol/Documents'
-    with open(file) as f:
-        xml = f.read()
-    splitted_xml = splitter(xml)
-    print(len(splitted_xml))
-    iter = 0
-    while iter < len(splitted_xml):
-        parsed_patent = parse_XML(splitted_xml[iter])
-        save_files = save_patent(parsed_patent, path)
-        patent = map_patent(parsed_patent, save_files)
-        iter += 1
-    print(patent.title)
+    names = sys.argv[1:]
+    filenames_list = []
+    i = 0
+
+    con = create_connection("diplom", "postgres", "postgres", "localhost", "5432")
+    create_tables(con)
+    con.close()
+
+    # Проверка существования
+    while i < len(names):
+        if os.path.isdir(names[i]):
+            names += list(map(lambda x: f"{names[i]}/{x}", os.listdir(names[i])))
+        i += 1
+
+    filenames = [name for name in names if os.path.isfile(name)]
+
+    for i in range(parallel_processes_count):
+        start = i * len(filenames) / parallel_processes_count
+        end = (i + 1) * len(filenames) / parallel_processes_count
+        if i == parallel_processes_count:
+            end = len(filenames)
+        start = int(start)
+        end = int(end)
+        if len(filenames[start:end]) > 0:
+            filenames_list.append(filenames[start:end])
+
+    filenames_list = filenames_list
+
+    processes = []
+
+    for sublist in filenames_list:
+        p = multiprocessing.Process(target=process_files, args=(sublist, path))
+        p.start()
+        processes.append(p)
+
+    for p in processes:
+        p.join()
+
+    print("\nDone.")
 
 
 if __name__ == '__main__':
