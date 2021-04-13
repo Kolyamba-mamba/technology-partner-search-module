@@ -1,8 +1,9 @@
 class Patent:
     """Класс патента"""
 
-    def __init__(self, publication_reference, main_classification_type, main_classification,
+    def __init__(self, id, publication_reference, main_classification_type, main_classification,
                  title, inventors, abstract_path, description_path, claims_path):
+        self.id = id
         self.publication_reference = publication_reference
         self.main_classification_type = main_classification_type
         self.main_classification = main_classification
