@@ -55,10 +55,13 @@ def find_forbidden_sentences(sentences: List[str]):
     for sentence in sentences:
         if len(sentence) > 0:
             words = sentence_splitter(sentence)
-            for word in words:
-                if word.lower() in forbidden_words or word.isnumeric():
-                    forbidden_sentences.append(sentence)
-                    break
+            if len(words) > 3:
+                for word in words:
+                    if word.lower() in forbidden_words or word.isnumeric():
+                        forbidden_sentences.append(sentence)
+                        break
+            else:
+                forbidden_sentences.append(sentence)
     return forbidden_sentences
 
 
