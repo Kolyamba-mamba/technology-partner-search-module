@@ -22,7 +22,7 @@ def execute_query(connection, query):
     cursor = connection.cursor()
     try:
         cursor.execute(query)
-        print("Запрос прошел успешно")
+        # print("Запрос прошел успешно")
     except psycopg2.OperationalError as e:
         print(f"Ошибка '{e}' при выполнении запроса")
 
@@ -32,7 +32,28 @@ def execute_query_with_params(connection, query, params):
     cursor = connection.cursor()
     try:
         cursor.execute(query, params)
-        print("Запрос прошел успешно")
+        # print("Запрос прошел успешно")
+    except psycopg2.OperationalError as e:
+        print(f"Ошибка '{e}' при выполнении запроса")
+
+
+def execute_select_all_query(connection, query):
+    connection.autocommit = True
+    cursor = connection.cursor()
+    try:
+        cursor.execute(query)
+        # print("Запрос прошел успешно")
+        return cursor.fetchall()
+    except psycopg2.OperationalError as e:
+        print(f"Ошибка '{e}' при выполнении запроса")
+
+
+def get_cursor_query(connection, query):
+    cursor = connection.cursor()
+    try:
+        cursor.execute(query)
+        # print("Запрос прошел успешно")
+        return cursor
     except psycopg2.OperationalError as e:
         print(f"Ошибка '{e}' при выполнении запроса")
 
