@@ -3,6 +3,7 @@ import os
 import uuid
 import sys
 import multiprocessing
+import time
 from models.parsedPatent import ParsedPatent
 from models.patent import Patent
 from helpers.dbHelper import create_connection, create_tables
@@ -170,6 +171,7 @@ def map_patent(parsed_patent: ParsedPatent, paths):
 def process_files(files, path):
     con = create_connection("diplom", "postgres", "postgres", "localhost", "5432")
     for file in files:
+        start_time = time.time()
         with open(file) as f:
             xml = f.read()
         splitted_xml = splitter(xml)
@@ -181,11 +183,13 @@ def process_files(files, path):
             patent = map_patent(parsed_patent, save_files)
             insert_patent(con, patent)
             iter += 1
-        print(patent.title)
+        end_time = time.time()
+        print(f"Finished processing {file}, time: {end_time-start_time}")
     con.close()
 
 
 def main():
+    total_time_start = time.time()
     parallel_processes_count = multiprocessing.cpu_count() - 2
     path = 'C:/Users/mrkol/Documents'
     names = sys.argv[1:]
@@ -226,7 +230,9 @@ def main():
     for p in processes:
         p.join()
 
-    print("\nDone.")
+    total_time_end = time.time()
+
+    print(f"\nDone in {total_time_end - total_time_start}")
 
 
 if __name__ == '__main__':
