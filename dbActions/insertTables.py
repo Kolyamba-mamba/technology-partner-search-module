@@ -22,4 +22,14 @@ def insert_patent(connection, patent: Patent):
 
 
 def insert_sao(connection, sao: Sao):
-    pass
+    insert_query = """
+        INSERT INTO sao (
+        id, 
+        subject,
+        action, 
+        object,
+        patent_id)
+        values 
+        (%s,%s,%s,%s,%s)
+        """
+    execute_query_with_params(connection, insert_query, list(sao.__dict__.values()))
