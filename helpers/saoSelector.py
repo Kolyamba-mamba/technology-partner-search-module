@@ -8,11 +8,15 @@ from models.sao import Sao
 from dbActions.getTables import get_count_table_rows, get_entities, get_cursor
 from helpers.dbHelper import create_connection
 from dbActions.insertTables import insert_sao
+from helpers.logHelper import record_sao_log
 import psycopg2
 
 
 def rem(text: str):
-    sub_regex = re.sub(r"\([\w\W][^\)\(]+\)", "", text)
+    pattern = r"\([\w\W][^\)\(]*\)"
+    sub_regex = re.sub(pattern, "", text)
+    if re.search(pattern, sub_regex):
+        sub_regex = rem(sub_regex)
     return sub_regex
 
 
