@@ -156,10 +156,12 @@ def get_sao(words, patent_id):
 
 
 # Функция для извлечения sao
-def process_sao(text: str, patent_id: str, is_description: bool):
+def process_sao(text: str, patent_id: str, patent_name: str, is_description: bool):
+    descr = text
     if is_description:
         text = split_description(text)
     text = rem(text)
+    saos = []
     sentences = get_sentences(text)
     nlp = stanza.Pipeline(lang='en', processors='tokenize,mwt,pos,lemma,depparse')
     con = create_connection("diplom", "postgres", "postgres", "localhost", "5432")
@@ -167,12 +169,14 @@ def process_sao(text: str, patent_id: str, is_description: bool):
         doc = nlp(sentence)
         if doc.sentences:
             sao = get_sao(doc.sentences[0].words, patent_id)
-        if sao:
-            try:
-                insert_sao(con, sao)
-            except psycopg2.errors.UniqueViolation as e:
-                print(e)
+            if sao:
+                saos.append(sao)
+                try:
+                    insert_sao(con, sao)
+                except psycopg2.errors.UniqueViolation as e:
+                    print(e)
     con.close()
+    record_sao_log(patent_name, descr, sentences, saos, 'C:/Users/mrkol/Documents/myLog/saoLog.txt')
 
 
 def main():
@@ -185,12 +189,12 @@ def main():
             if os.path.isfile(patent.abstract_path):
                 with open(str(patent.abstract_path), 'r', encoding='utf8') as f:
                     lines = f.read()
-                    process_sao(lines, patent.id, False)
+                    process_sao(lines, patent.id, patent.publication_reference, False)
         if patent.description_path:
             if os.path.isfile(patent.description_path):
                 with open(str(patent.description_path), 'r', encoding='utf8') as f:
                     lines = f.read()
-                    process_sao(lines, patent.id, True)
+                    process_sao(lines, patent.id, patent.publication_reference, True)
     con.close()
 
 
