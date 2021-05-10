@@ -1,6 +1,9 @@
-from models.patent import Patent
-from models.sao import Sao
-from helpers.dbHelper import execute_query_with_params
+import os
+import sys
+sys.path.append(os.path.abspath('../../mySite/mySite'))
+from modules.models.patent import Patent
+from modules.models.sao import Sao
+from modules.helpers.dbHelper import execute_query_with_params
 
 
 def insert_patent(connection, patent: Patent):

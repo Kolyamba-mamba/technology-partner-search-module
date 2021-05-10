@@ -1,14 +1,15 @@
 import stanza
-import os
 import re
 import uuid
 from typing import List
-from models.patent import Patent
-from models.sao import Sao
-from dbActions.getTables import get_count_table_rows, get_entities, get_cursor
-from helpers.dbHelper import create_connection
-from dbActions.insertTables import insert_sao
-from helpers.logHelper import record_sao_log
+import os
+import sys
+from modules.models.patent import Patent
+from modules.models.sao import Sao
+from modules.dbActions.getTables import get_entities
+from modules.helpers.dbHelper import create_connection
+from modules.dbActions.insertTables import insert_sao
+from modules.helpers.logHelper import record_sao_log
 import psycopg2
 
 

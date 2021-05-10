@@ -1,10 +1,10 @@
 import stanza
-from helpers.dbHelper import create_connection
-from dbActions.getTables import get_entities_by_condition
-from models.sao import Sao
-from analyzer.save_txt import save_text_db_to_txt
-from analyzer.w2v_module.word2vec import create_w2v_model
+import os
+import sys
 from gensim.models import Word2Vec
+from modules.helpers.dbHelper import create_connection
+from modules.dbActions.getTables import get_entities_by_condition
+from modules.models.sao import Sao
 
 
 # объединение списков
@@ -79,8 +79,9 @@ def get_ao(query):
 
 
 # Функция поиска совпадающих с запросом sao
-def find_match(connection, model, query):
+def find_match(connection, query):
     # stanza.download('en')
+    model = Word2Vec.load('C:\\Users\\mrkol\\OneDrive\\Рабочий стол\\Univers\\Диплом\\technology-partner-search-module\\modules\\analyzer\\myModel.model')
     sao_with_action = []
     sao_with_object = []
     action, obj = get_ao(query)
@@ -104,10 +105,20 @@ def find_match(connection, model, query):
     return result
 
 
+def get_patents(query):
+    results = []
+    connection = create_connection("diplom", "postgres", "postgres", "localhost", "5432")
+    # save_text_db_to_txt(connection)
+    # create_w2v_model('C:/Users/mrkol/Documents/myLog/dataset1.txt')
+    matches = find_match(connection, query)
+    for match in matches:
+        patent = get_entities_by_condition(connection, "patents", f"id = '{match[1][4]}'")[0]
+        result = (patent[0], patent[5], patent[4], patent[1], match[1][2] + " " + match[1][3], match[1][1])
+        results.append(result)
+    return results
 
-con = create_connection("diplom", "postgres", "postgres", "localhost", "5432")
-# save_text_db_to_txt(con)
-# create_w2v_model('C:/Users/mrkol/Documents/myLog/dataset1.txt')
-model = Word2Vec.load('myModel.model')
-query = input()
-find_match(con, model, str(query))
+
+
+# model = Word2Vec.load('myModel.model')
+# query = input()
+get_patents("reducing capacity")

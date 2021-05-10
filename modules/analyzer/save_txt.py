@@ -1,6 +1,8 @@
-from dbActions.getTables import get_abstract_and_descr_path
-from helpers.saoSelector import rem, split_description
 import os
+import sys
+sys.path.append(os.path.abspath('../../mySite/mySite'))
+from modules.dbActions.getTables import get_abstract_and_descr_path
+from modules.helpers.saoSelector import rem, split_description
 
 
 def save_text_db_to_txt(con, filename_base = 'C:/Users/mrkol/Documents/myLog/dataset.txt'):

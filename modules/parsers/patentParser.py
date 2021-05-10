@@ -1,13 +1,13 @@
 from bs4 import BeautifulSoup as BS
-import os
 import uuid
-import sys
 import multiprocessing
 import time
-from models.parsedPatent import ParsedPatent
-from models.patent import Patent
-from helpers.dbHelper import create_connection, create_tables
-from dbActions.insertTables import insert_patent
+import os
+import sys
+from modules.models.parsedPatent import ParsedPatent
+from modules.models.patent import Patent
+from modules.helpers.dbHelper import create_connection, create_tables
+from modules.dbActions.insertTables import insert_patent
 
 
 def save_to_file(path: str, patent_title: str, ext: str, data: str):

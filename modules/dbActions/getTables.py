@@ -1,4 +1,6 @@
-from helpers.dbHelper import execute_select_all_query, get_cursor_query
+import os
+import sys
+from modules.helpers.dbHelper import execute_select_all_query, get_cursor_query
 
 
 def get_count_table_rows(connection, table_name):

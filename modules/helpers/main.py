@@ -1,8 +1,8 @@
+import os
 import sys
-
-import helpers.argParser as ap
-import helpers.patentDownloader as pd
-import helpers.unpacker as up
+import modules.helpers.argParser as ap
+import modules.helpers.patentDownloader as pd
+import modules.helpers.unpacker as up
 
 
 def main():

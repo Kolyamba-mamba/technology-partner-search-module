@@ -1,5 +1,7 @@
 from typing import List
-from models.sao import Sao
+import os
+import sys
+from modules.models.sao import Sao
 
 
 def record_sao_log(patent_number: str, description_text: str, sentences: List[str], saos: List[Sao], filePath: str):
