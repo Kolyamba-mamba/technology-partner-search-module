@@ -1,6 +1,7 @@
 import stanza
 from helpers.dbHelper import create_connection
 from dbActions.getTables import get_entities_by_condition
+from models.sao import Sao
 from analyzer.save_txt import save_text_db_to_txt
 from analyzer.w2v_module.word2vec import create_w2v_model
 from gensim.models import Word2Vec
@@ -24,6 +25,23 @@ def merge_list_and_count_weight(lst1, lst2):
             if index >= 0:
                 lst1[index] = (lst1[index][0] + i[0], lst1[index][1])
     return lst1
+
+
+# получение элементов с уникальным родителем
+def get_sao_with_unique_parent(lst):
+    result = []
+    item_in_list = False
+    for l in lst:
+        for res in result:
+            input_sao = Sao(*l[1])
+            result_sao = Sao(*res[1])
+            if input_sao.patent_id == result_sao.patent_id:
+                item_in_list = True
+                break
+        if not item_in_list:
+            result.append(l)
+        item_in_list = False
+    return result
 
 
 # ищем совпадения с синонимами объекта
@@ -82,7 +100,8 @@ def find_match(connection, model, query):
             sao_with_action = merge_list(sao_with_action, synonym_sao)
     match_list = merge_list_and_count_weight(sao_with_action, sao_with_object)
     match_list.sort(key=lambda x: (x[0]), reverse=True)
-    return match_list
+    result = get_sao_with_unique_parent(match_list)
+    return result
 
 
 
