@@ -113,7 +113,7 @@ def get_patents(query):
     matches = find_match(connection, query)
     for match in matches:
         patent = get_entities_by_condition(connection, "patents", f"id = '{match[1][4]}'")[0]
-        result = (patent[0], patent[5], patent[4], patent[1], match[1][2] + " " + match[1][3], match[1][1])
+        result = (patent[0], patent[5], patent[4], patent[1], match[1][2] + " " + match[1][3], match[1][1], patent[9])
         results.append(result)
     return results
 
@@ -121,4 +121,4 @@ def get_patents(query):
 
 # model = Word2Vec.load('myModel.model')
 # query = input()
-get_patents("reducing capacity")
+get_patents("reducing capacity")# get_patents("reducing capacity")

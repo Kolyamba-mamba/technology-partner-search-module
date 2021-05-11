@@ -17,9 +17,10 @@ def insert_patent(connection, patent: Patent):
     inventors, 
     abstract_path, 
     description_path, 
-    claims_path)
+    claims_path,
+    assignee)
     values 
-    (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+    (%s,%s,%s,%s,%s,%s,%s,%s,%s, %s)
     """
     execute_query_with_params(connection, insert_query, list(patent.__dict__.values()))
 

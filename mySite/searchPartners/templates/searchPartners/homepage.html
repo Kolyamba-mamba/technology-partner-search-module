@@ -7,7 +7,7 @@
 </head>
 <body>
     <header class="header">
-        <h2 class="text-center">Наименоване изделия или технологии для поиска партнеров </h2>
+        <h2 class="text-center">Поиск технологических партнеров </h2>
     </header>
 
 <main class="mx-5 mt-3">
@@ -28,21 +28,21 @@
     <table class="table table-bordered mt-3">
         <thead>
             <tr>
+                <th>Компания</th>
                 <th>Изобретатели</th>
                 <th>Название патента</th>
                 <th>Номер патента</th>
                 <th>Проблема</th>
-                <th>Решение</th>
             </tr>
         </thead>
         <tbody>
         {% for partner in partners %}
             <tr>
+                <td>{{partner.6}}</td>
                 <td>{{partner.1}}</th>
                 <td>{{partner.2}}</td>
                 <td><a href="http://127.0.0.1:8000/patent/{{partner.0}}">{{partner.3}}</a></td>
                 <td>{{partner.4}}</td>
-                <td>{{partner.5}}</td>
             </tr>
         {% endfor %}
         </tbody>

@@ -14,6 +14,12 @@ def parse_args(args):
     parser.add_argument('-saveUrl', type=bool, dest='saveUrl',
                         default=False, help='Сохранять ли ссылки на файлы патентов')
     parser.add_argument('-urlsPath', type=str, dest='urlsPath', help='Путь к файлу с ссылками')
+    parser.add_argument('-parsePatent', type=bool, dest='parsePatent', default=False, help='Запуск парсера патентов')
+    parser.add_argument('-selectSao', type=bool, dest='selectSao', default=False, help='Запуск извлечения структур SAO')
+    parser.add_argument('-createSaoLog', type=bool, dest='createSaoLog', default=False,
+                        help='Сохранение логов при извлечении SAO')
+    parser.add_argument('-createW2VModel', type=bool, dest='cerateW2VModel', default=False,
+                        help='Создание модели Word2Vec')
     return parser.parse_args(args)
 
 

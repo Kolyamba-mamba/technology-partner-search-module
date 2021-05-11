@@ -3,6 +3,7 @@ import sys
 import modules.helpers.argParser as ap
 import modules.helpers.patentDownloader as pd
 import modules.helpers.unpacker as up
+import modules.parsers.patentParser as pp
 
 
 def main():
@@ -16,6 +17,9 @@ def main():
 
     if args.startUnpacker:
         up.main(args)
+
+    if args.parsePatent:
+        pp.main()
 
 
 if __name__ == '__main__':

@@ -69,7 +69,8 @@ def create_tables(connection):
     inventors TEXT,
     abstract_path TEXT,
     description_path TEXT,
-    claims_path TEXT
+    claims_path TEXT,
+    assignee TEXT
     )
     """
 

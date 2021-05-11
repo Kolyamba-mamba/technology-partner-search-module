@@ -80,6 +80,11 @@ def parse_XML(text):
                                 'last-name': get_text_field(content, "last-name")}
                     inventors.append(inventor)
 
+        assignee_tmp = soup.find("assignee")
+        assignee = None
+        if assignee_tmp:
+            assignee = get_text_field(assignee_tmp, "orgname")
+
         abstract_tmp = soup.find("abstract")
         if abstract_tmp:
             abstract = abstract_tmp.text
@@ -124,7 +129,7 @@ def parse_XML(text):
                         continue
 
         return ParsedPatent(application_reference, publication_reference, str(classification_type),
-                            str(main_classification), title, inventors, abstract, description, claims)
+                            str(main_classification), title, inventors, abstract, description, claims, assignee)
 
     except Exception:
         print("Ошибка при парсинге патента " + patent_reference)
@@ -164,7 +169,7 @@ def map_patent(parsed_patent: ParsedPatent, paths):
         inventors = ""
     return Patent(str(uuid.uuid4()), patent_reference, parsed_patent.main_classification_type,
                   parsed_patent.main_classification, parsed_patent.title, inventors, paths['abstractPath'],
-                  paths['descriptionPath'], paths['claimsPath'])
+                  paths['descriptionPath'], paths['claimsPath'], parsed_patent.assignee)
 
 
 # Функция для обработки файлов
@@ -179,6 +184,8 @@ def process_files(files, path):
         iter = 0
         while iter < len(splitted_xml):
             parsed_patent = parse_XML(splitted_xml[iter])
+            if not parsed_patent:
+                continue
             save_files = save_patent(parsed_patent, path)
             patent = map_patent(parsed_patent, save_files)
             insert_patent(con, patent)
@@ -192,7 +199,8 @@ def main():
     total_time_start = time.time()
     parallel_processes_count = multiprocessing.cpu_count() - 2
     path = 'C:/Users/mrkol/Documents'
-    names = sys.argv[1:]
+    files = os.listdir(path + '/patents/unpack')
+    names = list(map(lambda x: path + '/patents/unpack/' + x, files))
     filenames_list = []
     i = 0
 
