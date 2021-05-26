@@ -36,7 +36,7 @@ def sentence_splitter(sentence: str):
 def split_description(text: str):
     titles = ["SUMMARY OF THE INVENTION", "SUMMARY", "DETAILED DESCRIPTION", "BRIEF SUMMARY OF THE INVENTION",
               "DETAILED DESCRIPTION OF THE INVENTION", "TECHNICAL FIELD", "FIELD OF THE INVENTION",
-              "SUMMARY AND OBJECTS OF THE INVENTION", "BRIEF SUMMARY"]
+              "SUMMARY AND OBJECTS OF THE INVENTION", "BRIEF SUMMARY", "FIELD OF INVENTION"]
     result = []
     splitter = re.compile(r'([^a-z0-9.]{2,}\n)')
     splitted_text = splitter.split(text)
@@ -50,8 +50,7 @@ def split_description(text: str):
 def find_forbidden_sentences(sentences: List[str]):
     forbidden_sentences = []
     forbidden_words = ['comprise', 'comprises', 'comprised', 'comprising', 'include', 'includes', 'including',
-                       'included', 'consist', 'consists', 'consisted', 'consisting', 'have', 'has', 'had',
-                       'having', 'connect', 'connects', 'connected', 'connecting', 'fig', 'figs', 'contain',
+                       'included', 'consist', 'consists', 'consisted', 'consisting', 'connect', 'connects', 'connected', 'connecting', 'fig', 'figs', 'contain',
                        'contains', 'contained', 'containing']
     for sentence in sentences:
         if len(sentence) > 0:
@@ -103,15 +102,17 @@ def find_trim_sentence(sentences: List[str]):
 
 def get_sentences(text: str):
     sentences = text_splitter(text)
-    forbidden_sentences = find_forbidden_sentences(sentences)
-    for sentence in forbidden_sentences:
-        sentences.remove(sentence)
     trim_sentence = find_trim_sentence(sentences)
+    forbidden_sentences = find_forbidden_sentences(trim_sentence)
+    for sentence in forbidden_sentences:
+        trim_sentence.remove(sentence)
+    # trim_sentence = find_trim_sentence(sentences)
     return trim_sentence
 
 
 def get_sao(words, patent_id):
-    object_deprel = ['nmod', 'obj', 'obl']
+    object_deprel = ['iobj', 'obj', 'obl']
+    subject_deprel = ['nsubj', 'csubj', 'acl']
 
     object_id = None
     subject_id = None
@@ -137,7 +138,7 @@ def get_sao(words, patent_id):
             action = (id_start, id_end, action_text)
         elif word.deprel in object_deprel and not object_id:
             object_id = word.id
-        elif word.deprel == 'nsubj' and not subject_id:
+        elif word.deprel in subject_deprel and not subject_id:
             subject_id = word.id
 
     if action and object_id and subject_id:
